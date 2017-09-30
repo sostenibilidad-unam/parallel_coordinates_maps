@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Standard Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!-- Site Properties -->
+    <title>DrillDown</title>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css"
+	  integrity="sha256-/Z28yXtfBv/6/alw+yZuODgTbKZm86IKbPE/5kjO/xY=" crossorigin="anonymous" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"
+	    integrity="sha256-Bhi6GMQ/72uYZcJXCJ2LToOIcN3+Cx47AZnq/Bw1f7A="
+	    crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet"
+	  href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.12.0/ol.css"
+	  integrity="sha256-fjKCwdf+fsFNnRRFfKZIznHEygdh6vtEJqVg8Eu3Kuw="
+	  crossorigin="anonymous" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.12.0/ol.js"
+	    integrity="sha256-Gox75luuxLxNYWsoO+2sGVMYOUcheq0zhGEB2310fuw=" crossorigin="anonymous"></script>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" 
+		integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec=" crossorigin="anonymous"></script>
+		
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/parcoords/0.7.0/d3.parcoords.css" 
+		integrity="sha256-5xEAILWn4PCchv5VcG34HW6666pNuyjo7B/4+e6a6wQ=" crossorigin="anonymous" />
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/parcoords/0.7.0/d3.parcoords.js" 
+		integrity="sha256-P1EuxWFFZ7gng7kzlSGQywWxZF4SBHMU++KS2HA3FNE=" crossorigin="anonymous"></script>
+
+    <style type="text/css">
+    
+      body {
+           margin: 3em;
+      }
+       #c1 {
+          background-color: rgb(74,190,181);
+       }
+       #c2 {
+          background-color: rgb(24,138,156);
+       }
+       #c3 {
+          background-color: rgb(0,69,132);
+       }
+       #c4 {
+          background-color: rgb(0,30,123);
+       }
+       #c5 {
+          background-color: rgb(16,0,90);
+       }
+
+    </style>
+    
+    <!-- parallel coordinates -->
+    <style>
+		svg {font: 16px sans-serif; font-weight: normal;}
+		.background path {fill: none; stroke: #ddd; shape-rendering: crispEdges;}
+		.one_foreground path {stroke-width: 4px; fill: none; stroke: steelblue;}
+		.foreground path {fill: none; stroke: steelblue;}
+		.brush .extent {fill-opacity: .3; stroke: #fff; shape-rendering: crispEdges;}
+		.axis line,
+		.axis path {fill: none; stroke: #000; shape-rendering: crispEdges;}
+		.axis text {text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;}  
+		* {margin: 0; padding: 0;}
+	</style>
+
+  </head>
+
+  <body>
+
+    <div class="ui two column stackable grid">
+	    <div class="four wide column">
+			<div class="ui segment">
+		  		{% block table %}
+		  		{% endblock %}
+			</div>
+			<div class="ui segment">
+		  		
+		  		<form action="upload" method=post enctype=multipart/form-data>
+			      <p><input type=file name=file[] multiple="multiple">
+			         <input type=submit value=Upload>
+			    </form>
+				
+			</div>
+	     </div>
+	
+	      <!-- open layers map -->
+	     <div class="twelve wide column">
+			 <div class="ui segment">
+			 	<div id="map"></div>
+			 </div>
+			 
+	     </div>
+	     <div class="sixteen wide column">
+			<div class="ui segment">
+		  		<div id="graph"></div>
+			</div>
+	     </div>
+    </div>
+    <script>
+    
+ 
+    </script>
+    <script src="/static/map_setup.js"></script>
+    {% block scripts %}
+    {% endblock %}
+  </body>
+
+</html>
