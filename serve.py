@@ -8,10 +8,13 @@ from werkzeug import secure_filename
 import shapefile
 from jinja2 import Environment, FileSystemLoader
 import json
+from simpledbf import Dbf5
+import hashlib
+from json import dumps
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = '/Users/fidel/Documents/GitHub/parallel_coordinates_maps/uploads/'
+app.config['UPLOAD_FOLDER'] = './uploads/'
 
 ALLOWED_EXTENSIONS = ['prj', 'shp', 'dbf', 'shx']
 
@@ -37,11 +40,23 @@ def load_agebs():
 agebs = load_agebs()
 
 
-@app.route('/table/')
-def table():
-    template = env.get_template('table2.html')
-    return template.render()
 
+
+@app.route('/table/<map_id>')
+def table(map_id):
+    if map_id == "nada":
+        layer_url = "/static/bayesianPreEnch.json"
+        data_url = "/static/p_agebs.csv"
+    else:
+        layer_url = "/uploads/%s/layer.json" % map_id
+        data_url = "/uploads/%s/data.csv" % map_id
+    template = env.get_template('table2.html')
+    return template.render(layer_url=layer_url, data_url=data_url)
+
+
+@app.route('/uploads/<path:path>')
+def serve_uploads(path):
+    return send_from_directory('uploads', path)
 
 @app.route('/static/<path:path>')
 def serve_static(path):
@@ -52,13 +67,27 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def hash_from_shp(shp_path):
+    BUF_SIZE = 65536  # lets read stuff in 64kb chunks!
 
+    md5 = hashlib.md5()
+    
+    with open(shp_path, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            md5.update(data)
+    
+    
+    return md5.hexdigest()
 
 @app.route('/table/upload', methods=['POST'])
 def upload():
     uploaded_files = request.files.getlist("file[]")
     filenames = []
     elShp = ""
+    ######################################################################################## falta un chek de que viene el shp, shx, prj y dbf
     for f in uploaded_files:
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
@@ -77,18 +106,21 @@ def upload():
         buff.append(dict(type="Feature", \
          geometry=geom, properties=atr)) 
     
+    el_hash = hash_from_shp(os.path.join(app.config['UPLOAD_FOLDER'], elShp))
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], el_hash))
     # write the GeoJSON file
-    from json import dumps
-    geojson = open("test5.json", "w")
-    geojson.write(dumps({"type": "FeatureCollection", "features": buff}, indent=0))
-    geojson.close()        
-    # Load an html page with a link to each uploaded file
-    return ""
 
-# This route is expecting a parameter containing the name
-# of a file. Then it will locate that file on the upload
-# directory and show it on the browser, so if the user uploads
-# an image, that image is going to be show after the upload
+    with open(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "layer.json"), "w") as geojson:
+        geojson.write(dumps({"type": "FeatureCollection", "features": buff}, indent=0))
+    
+    # write the csv file
+    dbf = Dbf5(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
+    df = dbf.to_dataframe()
+    df.to_csv(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "data.csv"), encoding="utf8", index=False)    
+    
+    return redirect("/table/%s" % el_hash)
+
+
 
 
 if __name__ == '__main__':

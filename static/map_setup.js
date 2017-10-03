@@ -1,3 +1,5 @@
+var layer_url = document.currentScript.getAttribute('layer_url');
+var data_url = document.currentScript.getAttribute('data_url');
 function paint(x,y){
     console.log(x, y);
      vectorSource.clear();
@@ -8,7 +10,7 @@ function paint(x,y){
     ageb_ids = [];
     
     estosFeatures.forEach(function (feature) {
-    	ageb_ids.push(feature.get('AGEB_ID')); 
+    	ageb_ids.push(feature.get('ageb_id')); 
     });
    
     foreground.style("display", function(d) {return ageb_ids.indexOf(d['ageb_id']) >= 0 ? null : "none";});
@@ -21,7 +23,7 @@ var displayFeatureInfo = function (pixel) {
 
 	if (feature) {
 		
-		foreground.style("display", function(d) {return feature.get('AGEB_ID') == d['ageb_id'] ? null : "none";});
+		foreground.style("display", function(d) {return feature.get('ageb_id') == d['ageb_id'] ? null : "none";});
 		foreground.style("stroke-width", "4px");
 	}else{
 		foreground.style("stroke-width", "0.3px");
@@ -110,7 +112,7 @@ var map
 
 var layer = new ol.layer.Vector();
 jsonSource_data_layer = new ol.source.Vector();
-jsonSource_data_layer.addFeatures(get_features("/static/bayesianPreEnch.json"));
+jsonSource_data_layer.addFeatures(get_features(layer_url));
 var todos = jsonSource_data_layer.getFeatures();
 layer = new ol.layer.Vector({
     source: jsonSource_data_layer,
@@ -172,7 +174,7 @@ var svg = d3.select("#graph").append("svg")
 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-d3.csv("/static/p_agebs.csv", function(error, cars) {
+d3.csv(data_url, function(error, cars) {
 
 // Extract the list of dimensions and create a scale for each.
 x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
@@ -246,7 +248,7 @@ function brush() {
 		}
 	});
 	
-	estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('AGEB_ID')) >= 0;});
+	estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('ageb_id')) >= 0;});
 	vectorSource.addFeatures(estosFeatures);
 }
 var highlightStyleCache = {};
