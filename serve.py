@@ -29,9 +29,9 @@ def load_agebs():
         for f in g['features']:
             k = (f['properties']['FrecCateg'], f['properties']['PrecCateg'])
             if k in agebs:
-                agebs[k].append(f['properties']['AGEB_ID'])
+                agebs[k].append(f['properties']['id'])
             else:
-                agebs[k] = [f['properties']['AGEB_ID'], ]
+                agebs[k] = [f['properties']['id'], ]
 
     return agebs
 

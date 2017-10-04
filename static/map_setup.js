@@ -1,20 +1,6 @@
 var layer_url = document.currentScript.getAttribute('layer_url');
 var data_url = document.currentScript.getAttribute('data_url');
-function paint(x,y){
-    console.log(x, y);
-     vectorSource.clear();
-     //estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('AGEB_ID')) >= 0;});
-    estosFeatures = todos.filter(function (feature) {
-	return (feature.get('FrecCateg') == x && feature.get('PrecCateg') == y);});
-    vectorSource.addFeatures(estosFeatures);
-    ageb_ids = [];
-    
-    estosFeatures.forEach(function (feature) {
-    	ageb_ids.push(feature.get('ageb_id')); 
-    });
-   
-    foreground.style("display", function(d) {return ageb_ids.indexOf(d['ageb_id']) >= 0 ? null : "none";});
-}
+
 var displayFeatureInfo = function (pixel) {
 
 	var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
@@ -23,11 +9,11 @@ var displayFeatureInfo = function (pixel) {
 
 	if (feature) {
 		
-		foreground.style("display", function(d) {return feature.get('ageb_id') == d['ageb_id'] ? null : "none";});
+		foreground.style("display", function(d) {return feature.get('id') == d['id'] ? null : "none";});
 		foreground.style("stroke-width", "4px");
 	}else{
 		foreground.style("stroke-width", "0.3px");
-		foreground.style("display", function(d) {return ageb_ids.indexOf(d['ageb_id']) >= 0 ? null : "none";});
+		foreground.style("display", function(d) {return ageb_ids.indexOf(d['id']) >= 0 ? null : "none";});
 		vectorSource.clear();
 	    vectorSource.addFeatures(estosFeatures);
 	}
@@ -155,6 +141,10 @@ map = new ol.Map({
     			zoom: 11})
 });
 
+var extent = layer.getSource().getExtent();
+map.getView().fit(extent, map.getSize());
+
+
 var margin = {top: 30, right: 10, bottom: 10, left: 10},
 width = 1900 - margin.left - margin.right,
 height = 200 - margin.top - margin.bottom;
@@ -240,7 +230,7 @@ function brush() {
 	var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }), extents = actives.map(function(p) { return y[p].brush.extent(); });
 	foreground.style("display", function(d) {
 		if (actives.every(function(p, i) {return extents[i][0] <= d[p] && d[p] <= extents[i][1];})){
-			ageb_ids.push(d["ageb_id"]);
+			ageb_ids.push(d["id"]);
 			return null;	  
 		  
 		}else{
@@ -248,7 +238,7 @@ function brush() {
 		}
 	});
 	
-	estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('ageb_id')) >= 0;});
+	estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('id')) >= 0;});
 	vectorSource.addFeatures(estosFeatures);
 }
 var highlightStyleCache = {};
