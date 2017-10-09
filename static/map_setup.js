@@ -1,36 +1,9 @@
 var layer_url = document.currentScript.getAttribute('layer_url');
 var data_url = document.currentScript.getAttribute('data_url');
 
-var displayFeatureInfo = function (pixel) {
 
-	var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-		    return feature;
-	});
 
-	if (feature) {
-		
-		foreground.style("display", function(d) {return feature.get('id') == d['id'] ? null : "none";});
-		foreground.style("stroke-width", "4px");
-	}else{
-		foreground.style("stroke-width", "0.3px");
-		foreground.style("display", function(d) {return ageb_ids.indexOf(d['id']) >= 0 ? null : "none";});
-		vectorSource.clear();
-	    vectorSource.addFeatures(estosFeatures);
-	}
 
-	if (feature !== highlight) {
-		vectorSource.clear();
-		//if (highlight) {
-			//featureOverlay.getSource().removeFeature(highlight);
-		//	vectorSource.removeFeature(highlight);
-		//}
-	    	if (feature) {
-			vectorSource.addFeature(feature);
-		}
-		highlight = feature;
-	}
-
-};
 function get_features(url) {
     var data_layer = {};
 
@@ -50,80 +23,33 @@ function get_features(url) {
     return features;
 }
 
-var size = 0;
-var styleCache={}
-var style = function(feature, resolution){
-    var context = {
-		feature: feature,
-		variables: {}
-    };
-    var value = ""
-    var size = 0;
-    var style = [ new ol.style.Style({
-	    	stroke: new ol.style.Stroke({
-		    		color: 'rgba(100,100,100,1.0)', 
-					lineDash: null,
-					lineCap: 'butt',
-					lineJoin: 'miter',
-					width: 0}),
-			fill: new ol.style.Fill({color: 'rgba(100,100,100,0.5)'})
-	})];
-    if ("" !== null) {
-	var labelText = String("");
-    } else {
-	var labelText = ""
-    }
-    var key = value + "_" + labelText
-
-    if (!styleCache[key]){
-	var text = new ol.style.Text({
-	      font: '14.3px \'Ubuntu\', sans-serif',
-	      text: labelText,
-	      textBaseline: "center",
-	      textAlign: "left",
-	      offsetX: 5,
-	      offsetY: 3,
-	      fill: new ol.style.Fill({
-	        color: 'rgba(0, 0, 0, 255)'
-	      }),
-	    });
-	styleCache[key] = new ol.style.Style({"text": text})
-    }
-    var allStyles = [styleCache[key]];
-    allStyles.push.apply(allStyles, style);
-    return allStyles;
-};
-
 var map
-
+var vectorSource = new ol.source.Vector({projection: 'EPSG:4326'});
+var miVector = new ol.layer.Vector({
+    	source: vectorSource
+}); 
 var layer = new ol.layer.Vector();
 jsonSource_data_layer = new ol.source.Vector();
 jsonSource_data_layer.addFeatures(get_features(layer_url));
 var todos = jsonSource_data_layer.getFeatures();
+var geometry_type = todos[0].getGeometry().getType();
 layer = new ol.layer.Vector({
     source: jsonSource_data_layer,
-    style: style,
 	opacity: 0.85
 });
-
-var style2 = new ol.style.Style({
-	  fill: new ol.style.Fill({color: 'rgba(70,130,180,0.7)'}),
-	  stroke: new ol.style.Stroke({color: '#319FD3',width: 1}),
-	  text: new ol.style.Text({
-		  	font: '12px Calibri,sans-serif',
-		  	fill: new ol.style.Fill({color: 'rgba(250,163,1,1)'}),
-	        stroke: new ol.style.Stroke({
-	        		color: 'rgba(100,100,100,1)',
-	        		width: 3
-	        })
-	  })
-});
+if ((geometry_type == "Polygon") || (geometry_type == "MultiPolygon")){
+	layer.setStyle(polygon_style);
+	miVector.setStyle(polygon_style2);
+}
+	
+if (geometry_type == "Point" || geometry_type == "MultiPoint"){
+	layer.setStyle(point_style);
+	miVector.setStyle(point_style2);
+}
+	
        
-var vectorSource = new ol.source.Vector({projection: 'EPSG:4326'});
-var miVector = new ol.layer.Vector({
-    	source: vectorSource,
-    	style: style2
-}); 
+
+
     
 var stamenLayer = new ol.layer.Tile({
 	source: new ol.source.Stamen({layer: 'terrain'})
@@ -138,7 +64,7 @@ map = new ol.Map({
     target: 'map',
     view: new ol.View({
     			center: ol.proj.fromLonLat([-99.15,19.36]),
-    			zoom: 11})
+    			zoom: 10})
 });
 
 var extent = layer.getSource().getExtent();
@@ -222,6 +148,7 @@ function path(d) {
 return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
 }
 var ageb_ids = [];
+var stats_div = document.getElementById('statistics');
 // Handles a brush event, toggling the display of foreground lines.
 function brush() {
 
@@ -238,12 +165,48 @@ function brush() {
 		}
 	});
 	
+	stats_div.innerHTML = "selected: " + ageb_ids.length;
 	estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('id')) >= 0;});
 	vectorSource.addFeatures(estosFeatures);
 }
 var highlightStyleCache = {};
 var highlight;
 
+var displayFeatureInfo = function (pixel) {
+
+	var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+		    return feature;
+	});
+
+	if (feature) {
+		pcz.highlight(pcz.data().filter(function(d) {
+		    return d.id === feature.get('id');
+		    }));
+		foreground.style("display", function(d) {return feature.get('id') == d['id'] ? null : "none";});
+		foreground.style("stroke-width", "4px");
+		stats_div.innerHTML = "selected: 1";
+	}else{
+		foreground.style("stroke-width", "1px");
+		foreground.style("display", function(d) {return ageb_ids.indexOf(d['id']) >= 0 ? null : "none";});
+		brush();
+		vectorSource.clear();
+	    vectorSource.addFeatures(estosFeatures);
+	    pcz.unhighlight();
+	}
+
+	if (feature !== highlight) {
+		vectorSource.clear();
+		//if (highlight) {
+			//featureOverlay.getSource().removeFeature(highlight);
+		//	vectorSource.removeFeature(highlight);
+		//}
+	    	if (feature) {
+			vectorSource.addFeature(feature);
+		}
+		highlight = feature;
+	}
+
+};
 map.on('pointermove', function(evt) {
     if (evt.dragging) {
       return;
@@ -255,6 +218,100 @@ map.on('click', function(evt) {
   displayFeatureInfo(evt.pixel);
 });
 
+function color(value, min, max) {
+
+	interval = (max - min) / 5.0;
+	if (value < min + interval){
+		color = 'rgba(215,25,28,1.0)';
+	}
+	if (value > min + interval && value < min + (2*interval)){
+		color = 'rgba(253,174,97,1.0)';
+	}
+	if (value > min + (2*interval) && value < min + (3*interval)){
+		color = 'rgba(255,255,192,1.0)';
+	}
+	if (value > min + (3*interval) && value < min + (4*interval)){
+		color = 'rgba(166,217,106,1.0)';
+	}
+	if (value > min + (4*interval)){
+		color = 'rgba(26,150,65,1.0)';
+	}
+	
+}
+
+var pcz;
+var blue_to_brown = d3.scale.linear()
+.domain([0, 100])
+.range(["steelblue", "brown"])
+.interpolate(d3.interpolateLab);
+
+var color = function(d) { return blue_to_brown(d['Edad_infra']); };
+
+
+  
+//color scale for zscores
+var zcolorscale = d3.scale.linear()
+.domain([0,1])
+.range(["red", "yellow"])
+.interpolate(d3.interpolateLab);
+
+//load csv file and create the chart
+
+d3.csv(data_url, function(data) {
+	
+	pcz = d3.parcoords()("#graph2")
+	 .data(data)
+	 .hideAxis(["id"])
+	 .composite("darken")
+	 .render()
+	 .alpha(0.35)
+	 .brushMode("1D-axes")  // enable brushing
+	 .interactive()  // command line mode
+	
+	//change_color("Edad_infra");
+	
+	// click label to activate coloring
+	pcz.svg.selectAll(".dimension")
+	 .on("click", change_color)
+	 .selectAll(".label")
+	 .style("font-size", "14px");
+	pcz.on("brush", function(d) {
+		vectorSource.clear();
+		ageb_ids = [];
+		d.forEach(function(entry) {
+			ageb_ids.push(entry["id"]);
+		});
+		stats_div.innerHTML = "selected: " + ageb_ids.length;
+		estosFeatures = todos.filter(function (feature) {return ageb_ids.indexOf(feature.get('id')) >= 0;});
+		vectorSource.addFeatures(estosFeatures);
+	});
+});
+	
+//update color
+function change_color(dimension) {
+	pcz.svg.selectAll(".dimension")
+	 .style("font-weight", "normal")
+	 .filter(function(d) { return d == dimension; })
+	 .style("font-weight", "bold")
+	
+	pcz.color(zcolor(pcz.data(),dimension)).render()
+}
+	
+//return color function based on plot and dimension
+function zcolor(col, dimension) {
+	var z = zscore(_(col).pluck(dimension).map(parseFloat))
+	return function(d) { return zcolorscale(z(d[dimension])) }
+};
+	
+//color by zscore
+function zscore(col) {
+	var n = col.length,
+	   mean = _(col).mean(),
+	   sigma = _(col).stdDeviation();
+	return function(d) {
+	 return (d-mean)/sigma;
+	};
+};
 
 
 

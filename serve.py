@@ -20,29 +20,7 @@ ALLOWED_EXTENSIONS = ['prj', 'shp', 'dbf', 'shx']
 
 env = Environment(loader=FileSystemLoader('templates'))
 
-
-def load_agebs():
-    agebs = {}
-        
-    with open('static/bayesianPreEnch.json') as geo:
-        g = json.loads(geo.read())
-        for f in g['features']:
-            k = (f['properties']['FrecCateg'], f['properties']['PrecCateg'])
-            if k in agebs:
-                agebs[k].append(f['properties']['id'])
-            else:
-                agebs[k] = [f['properties']['id'], ]
-
-    return agebs
-
-
-
-agebs = load_agebs()
-
-
-
-
-@app.route('/table/<map_id>')
+@app.route('/parallel_coordinates_maps/<map_id>')
 def table(map_id):
     if map_id == "nada":
         layer_url = "/static/bayesianPreEnch.json"
@@ -82,7 +60,7 @@ def hash_from_shp(shp_path):
     
     return md5.hexdigest()
 
-@app.route('/table/upload', methods=['POST'])
+@app.route('/parallel_coordinates_maps/upload', methods=['POST'])
 def upload():
     uploaded_files = request.files.getlist("file[]")
     filenames = []
@@ -97,6 +75,7 @@ def upload():
             filenames.append(filename)
     print os.path.join(app.config['UPLOAD_FOLDER'], elShp)      
     reader = shapefile.Reader(os.path.join(app.config['UPLOAD_FOLDER'], elShp))
+    print reader.shapeType
     fields = reader.fields[1:]
     field_names = [field[0] for field in fields]
     buff = []
@@ -118,7 +97,7 @@ def upload():
     df = dbf.to_dataframe()
     df.to_csv(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "data.csv"), encoding="utf8", index=False)    
     
-    return redirect("/table/%s" % el_hash)
+    return redirect("/parallel_coordinates_maps/%s" % el_hash)
 
 
 
