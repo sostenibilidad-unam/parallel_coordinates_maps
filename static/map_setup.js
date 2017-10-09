@@ -92,11 +92,11 @@ var svg = d3.select("#graph").append("svg")
 
 d3.csv(data_url, function(error, cars) {
 
-// Extract the list of dimensions and create a scale for each.
-x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
-return d != "name" && (y[d] = d3.scale.linear()
-    .domain(d3.extent(cars, function(p) { return +p[d]; }))
-    .range([height, 0]));
+	// Extract the list of dimensions and create a scale for each.
+	x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
+	return d != "name" && (y[d] = d3.scale.linear()
+	    .domain(d3.extent(cars, function(p) { return +p[d]; }))
+	    .range([height, 0]));
 }));
 //console.log(cars);
 
@@ -247,13 +247,13 @@ var blue_to_brown = d3.scale.linear()
 
 var color = function(d) { return blue_to_brown(d['Edad_infra']); };
 
-
-  
-//color scale for zscores
-var zcolorscale = d3.scale.linear()
+//linear color scale 
+var colorscale = d3.scale.linear()
 .domain([0,1])
-.range(["red", "yellow"])
+.range(["purple", "pink"])
 .interpolate(d3.interpolateLab);
+  
+
 
 //load csv file and create the chart
 
@@ -264,7 +264,7 @@ d3.csv(data_url, function(data) {
 	 .hideAxis(["id"])
 	 .composite("darken")
 	 .render()
-	 .alpha(0.35)
+	 .alpha(0.22)
 	 .brushMode("1D-axes")  // enable brushing
 	 .interactive()  // command line mode
 	
@@ -293,26 +293,17 @@ function change_color(dimension) {
 	 .style("font-weight", "normal")
 	 .filter(function(d) { return d == dimension; })
 	 .style("font-weight", "bold")
-	
-	pcz.color(zcolor(pcz.data(),dimension)).render()
+	console.log(dimension);
+	pcz.color(pre_color(pcz.data(),dimension)).render()
 }
 	
-//return color function based on plot and dimension
-function zcolor(col, dimension) {
-	var z = zscore(_(col).pluck(dimension).map(parseFloat))
-	return function(d) { return zcolorscale(z(d[dimension])) }
-};
-	
-//color by zscore
-function zscore(col) {
-	var n = col.length,
-	   mean = _(col).mean(),
-	   sigma = _(col).stdDeviation();
-	return function(d) {
-	 return (d-mean)/sigma;
-	};
-};
-
+function pre_color(col,dimension){
+	var slice = _(col).pluck(dimension).map(parseFloat);
+	var normalize = d3.scale.linear()
+	.domain([_.min(slice),_.max(slice)])
+	.range([0,1]);
+	return function(d) { return colorscale(normalize(d[dimension])) }
+}
 
 
 
