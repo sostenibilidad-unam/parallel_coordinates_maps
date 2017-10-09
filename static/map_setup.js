@@ -167,6 +167,58 @@ function change_color(dimension) {
 	 .filter(function(d) { return d == dimension; })
 	 .style("font-weight", "bold")
 	pcz.color(pre_color(pcz.data(),dimension)).render()
+	
+	
+	
+	var polygon_style_p = function(feature, resolution){
+	    var context = {
+			feature: feature,
+			variables: {}
+	    };
+	    var value = feature.get(dimension);
+	    var slice = _(pcz.data()).pluck(dimension).map(parseFloat);
+		var normalize = d3.scale.linear()
+		.domain([_.min(slice),_.max(slice)])
+		.range([0,1]);
+	    var size = 0;
+	    var style = [ new ol.style.Style({
+		    	stroke: new ol.style.Stroke({
+			    		color: 'rgba(100,100,100,1.0)', 
+						lineDash: null,
+						lineCap: 'butt',
+						lineJoin: 'miter',
+						width: 0}),
+				fill: new ol.style.Fill({color: colorscale(normalize(value))})
+	    //colorscale(normalize(value))
+		})];
+	    if ("" !== null) {
+		var labelText = String("");
+	    } else {
+		var labelText = ""
+	    }
+	    var key = value + "_" + labelText
+
+	    if (!styleCache[key]){
+		var text = new ol.style.Text({
+		      font: '14.3px \'Ubuntu\', sans-serif',
+		      text: labelText,
+		      textBaseline: "center",
+		      textAlign: "left",
+		      offsetX: 5,
+		      offsetY: 3,
+		      fill: new ol.style.Fill({
+		        color: 'rgba(0, 0, 0, 255)'
+		      }),
+		    });
+		styleCache[key] = new ol.style.Style({"text": text})
+	    }
+	    var allStyles = [styleCache[key]];
+	    allStyles.push.apply(allStyles, style);
+	    return allStyles;
+	};
+
+	miVector.setStyle(polygon_style_p);
+	
 }
 	
 function pre_color(col,dimension){

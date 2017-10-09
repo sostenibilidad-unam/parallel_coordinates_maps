@@ -84,7 +84,6 @@ var polygon_style = function(feature, resolution){
 };
 
 
-
 var polygon_style2 = new ol.style.Style({
 	  fill: new ol.style.Fill({color: 'rgba(70,130,180,0.7)'}),
 	  stroke: new ol.style.Stroke({color: '#319FD3',width: 1}),
