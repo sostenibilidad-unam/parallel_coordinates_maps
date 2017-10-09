@@ -1,3 +1,6 @@
 venv
 uploads
 test
+.project
+.pydevproject
+.settings
