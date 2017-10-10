@@ -22,6 +22,36 @@ function get_features(url) {
 
     return features;
 }
+//linear color scale 
+var colorscale = d3.scale.linear()
+.domain([0,1])
+.range(["pink", "purple"])
+.interpolate(d3.interpolateLab);
+
+function hexToRGB(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";   
+}	
+var polygon_style2 = new ol.style.Style({
+	  fill: new ol.style.Fill({color: hexToRGB(colorscale(0.9),0.65)}),
+	  stroke: new ol.style.Stroke({color: hexToRGB(colorscale(0.9),1),width: 1}),
+	  text: new ol.style.Text({
+		  	font: '12px Calibri,sans-serif',
+		  	fill: new ol.style.Fill({color: 'rgba(250,163,1,1)'}),
+	        stroke: new ol.style.Stroke({
+	        		color: 'rgba(100,100,100,1)',
+	        		width: 3
+	        })
+	  })
+});
+
+var point_style2 =  new ol.style.Style({
+  image: new ol.style.Circle({radius: 6.0 + size,
+      stroke: new ol.style.Stroke({color: hexToRGB(colorscale(0.9),1), lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0}), fill: new ol.style.Fill({color: hexToRGB(colorscale(0.9),0.65)})})
+});
+
 
 var map
 var vectorSource = new ol.source.Vector({projection: 'EPSG:4326'});
@@ -129,11 +159,7 @@ map.getViewport().addEventListener('mouseout', function(evt){
 
 var pcz;
 
-//linear color scale 
-var colorscale = d3.scale.linear()
-.domain([0,1])
-.range(["pink", "purple"])
-.interpolate(d3.interpolateLab);
+
   
 //load csv file and create the chart
 d3.csv(data_url, function(data) {
@@ -144,7 +170,7 @@ d3.csv(data_url, function(data) {
 	 .composite("darken")
 	 .mode("queue")
 	 .rate(80)
-	 .color("#9a378f")
+	 .color(hexToRGB(colorscale(0.9),0.65))
 	 //.alphaOnBrushed(0.3)
 	 .render()
 	 .alpha(1)
@@ -170,12 +196,8 @@ d3.csv(data_url, function(data) {
 		vectorSource.addFeatures(estosFeatures);
 	});
 });
-function hexToRGB(hex, alpha) {
-    var r = parseInt(hex.slice(1, 3), 16),
-        g = parseInt(hex.slice(3, 5), 16),
-        b = parseInt(hex.slice(5, 7), 16);
-    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";   
-}	
+
+
 //update color
 function change_color(dimension) {
 	pcz.svg.selectAll(".dimension")
