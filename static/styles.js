@@ -85,8 +85,8 @@ var polygon_style = function(feature, resolution){
 
 
 var polygon_style2 = new ol.style.Style({
-	  fill: new ol.style.Fill({color: 'rgba(70,130,180,0.7)'}),
-	  stroke: new ol.style.Stroke({color: '#319FD3',width: 1}),
+	  fill: new ol.style.Fill({color: 'rgba(128, 0, 128,0.65)'}),
+	  stroke: new ol.style.Stroke({color: 'rgba(128, 0, 128,1)',width: 1}),
 	  text: new ol.style.Text({
 		  	font: '12px Calibri,sans-serif',
 		  	fill: new ol.style.Fill({color: 'rgba(250,163,1,1)'}),
@@ -99,5 +99,5 @@ var polygon_style2 = new ol.style.Style({
 
 var point_style2 =  new ol.style.Style({
     image: new ol.style.Circle({radius: 6.0 + size,
-        stroke: new ol.style.Stroke({color: '#319FD3', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0}), fill: new ol.style.Fill({color: 'rgba(70,130,180,0.7)'})})
+        stroke: new ol.style.Stroke({color: 'rgba(191, 77, 179,1)', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0}), fill: new ol.style.Fill({color: 'rgba(191, 77, 179,0.65)'})})
 });

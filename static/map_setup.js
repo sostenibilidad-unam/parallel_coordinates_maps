@@ -31,11 +31,12 @@ var miVector = new ol.layer.Vector({
 var layer = new ol.layer.Vector();
 jsonSource_data_layer = new ol.source.Vector();
 jsonSource_data_layer.addFeatures(get_features(layer_url));
+vectorSource.addFeatures(get_features(layer_url));
 var todos = jsonSource_data_layer.getFeatures();
 var geometry_type = todos[0].getGeometry().getType();
 layer = new ol.layer.Vector({
     source: jsonSource_data_layer,
-	opacity: 0.85
+	opacity: 0.65
 });
 if ((geometry_type == "Polygon") || (geometry_type == "MultiPolygon")){
 	layer.setStyle(polygon_style);
@@ -54,24 +55,22 @@ if (geometry_type == "Point" || geometry_type == "MultiPoint"){
 var stamenLayer = new ol.layer.Tile({
 	source: new ol.source.Stamen({layer: 'terrain'})
 });
-        
-var ageb_ids = [];  
-var estosFeatures = [];
+var ageb_ids = []; 
+todos.forEach(function(feature){ageb_ids.push(feature.get("id"))});
+ 
+var estosFeatures = todos;
 
 map = new ol.Map({
     projection:"EPSG:4326",
     layers: [stamenLayer, layer, miVector],
-    target: 'map',
-    view: new ol.View({
-    			center: ol.proj.fromLonLat([-99.15,19.36]),
-    			zoom: 10})
+    target: 'map'
 });
 
 var extent = layer.getSource().getExtent();
 map.getView().fit(extent, map.getSize());
 
 
-var ageb_ids = [];
+
 var stats_div = document.getElementById('statistics');
 
 
@@ -93,6 +92,8 @@ var displayFeatureInfo = function (pixel) {
 		vectorSource.clear();
 	    vectorSource.addFeatures(estosFeatures);
 	    pcz.unhighlight();
+	    stats_div.innerHTML = "selected: "+ ageb_ids.length;
+	    
 	}
 
 	if (feature !== highlight) {
@@ -118,7 +119,12 @@ map.on('pointermove', function(evt) {
 map.on('click', function(evt) {
   displayFeatureInfo(evt.pixel);
 });
-
+map.getViewport().addEventListener('mouseout', function(evt){
+	vectorSource.clear();
+    vectorSource.addFeatures(estosFeatures);
+    pcz.unhighlight();
+    stats_div.innerHTML = "selected: "+ ageb_ids.length;
+}, false);
 
 
 var pcz;
@@ -126,7 +132,7 @@ var pcz;
 //linear color scale 
 var colorscale = d3.scale.linear()
 .domain([0,1])
-.range(["purple", "pink"])
+.range(["pink", "purple"])
 .interpolate(d3.interpolateLab);
   
 //load csv file and create the chart
@@ -136,8 +142,12 @@ d3.csv(data_url, function(data) {
 	 .data(data)
 	 .hideAxis(["id"])
 	 .composite("darken")
+	 .mode("queue")
+	 .rate(80)
+	 .color("#9a378f")
+	 //.alphaOnBrushed(0.3)
 	 .render()
-	 .alpha(0.22)
+	 .alpha(1)
 	 .brushMode("1D-axes")  // enable brushing
 	 .interactive()  // command line mode
 	
@@ -150,6 +160,7 @@ d3.csv(data_url, function(data) {
 	 .style("font-size", "14px");
 	pcz.on("brush", function(d) {
 		vectorSource.clear();
+		pcz.shadows();
 		ageb_ids = [];
 		d.forEach(function(entry) {
 			ageb_ids.push(entry["id"]);
@@ -159,7 +170,12 @@ d3.csv(data_url, function(data) {
 		vectorSource.addFeatures(estosFeatures);
 	});
 });
-	
+function hexToRGB(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";   
+}	
 //update color
 function change_color(dimension) {
 	pcz.svg.selectAll(".dimension")
@@ -183,12 +199,12 @@ function change_color(dimension) {
 	    var size = 0;
 	    var style = [ new ol.style.Style({
 		    	stroke: new ol.style.Stroke({
-			    		color: 'rgba(100,100,100,1.0)', 
+			    		color: colorscale(normalize(value)), 
 						lineDash: null,
 						lineCap: 'butt',
 						lineJoin: 'miter',
 						width: 0}),
-				fill: new ol.style.Fill({color: colorscale(normalize(value))})
+				fill: new ol.style.Fill({color: hexToRGB(colorscale(normalize(value)),0.65)})
 	    //colorscale(normalize(value))
 		})];
 	    if ("" !== null) {
