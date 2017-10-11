@@ -98,7 +98,7 @@ map = new ol.Map({
 
 var extent = layer.getSource().getExtent();
 map.getView().fit(extent, map.getSize());
-
+//map.getView().setZoom(map.getView().getZoom() + 1);
 
 
 var stats_div = document.getElementById('statistics');
@@ -183,7 +183,7 @@ d3.csv(data_url, function(data) {
 	pcz.svg.selectAll(".dimension")
 	 .on("click", change_color)
 	 .selectAll(".label")
-	 .style("font-size", "14px");
+	 .style("font-size", "15px");
 	pcz.on("brush", function(d) {
 		vectorSource.clear();
 		pcz.shadows();
@@ -266,6 +266,20 @@ function pre_color(col,dimension){
 	.range([0,1]);
 	return function(d) { return colorscale(normalize(d[dimension])) }
 }
-
+function reset(){
+	ageb_ids = []; 
+	todos.forEach(function(feature){ageb_ids.push(feature.get("id"))});
+	 
+	estosFeatures = todos;
+	vectorSource.clear();
+	vectorSource.addFeatures(estosFeatures);
+	
+	pcz.brushReset();
+	pcz.color(hexToRGB(colorscale(0.9),0.65)).render();
+	pcz.svg.selectAll(".dimension")
+	 .style("font-weight", "normal")
+	miVector.setStyle(polygon_style2);
+	
+}
 
 

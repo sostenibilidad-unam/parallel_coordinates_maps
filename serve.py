@@ -85,10 +85,17 @@ def upload():
         buff.append(dict(type="Feature", \
          geometry=geom, properties=atr)) 
     
-    el_hash = hash_from_shp(os.path.join(app.config['UPLOAD_FOLDER'], elShp))
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], el_hash))
+    el_hash = hash_from_shp(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
+    if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], el_hash)):
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "prj"))
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "shp"))
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "shx"))
+        return redirect("/parallel_coordinates_maps/%s" % el_hash)
+    else:
+        os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], el_hash))
+    
     # write the GeoJSON file
-
     with open(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "layer.json"), "w") as geojson:
         geojson.write(dumps({"type": "FeatureCollection", "features": buff}, indent=0))
     
@@ -96,7 +103,10 @@ def upload():
     dbf = Dbf5(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
     df = dbf.to_dataframe()
     df.to_csv(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "data.csv"), encoding="utf8", index=False)    
-    
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "prj"))
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "shp"))
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "shx"))
     return redirect("/parallel_coordinates_maps/%s" % el_hash)
 
 
