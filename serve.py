@@ -20,6 +20,11 @@ ALLOWED_EXTENSIONS = ['prj', 'shp', 'dbf', 'shx']
 
 env = Environment(loader=FileSystemLoader('templates'))
 
+@app.route("/")
+def root():
+    return redirect('/parallel_coordinates_maps/example1', code=302)
+
+
 @app.route('/parallel_coordinates_maps/<map_id>')
 def table(map_id):
     if map_id == "nada":
@@ -65,7 +70,7 @@ def upload():
     uploaded_files = request.files.getlist("file[]")
     filenames = []
     elShp = ""
-    ######################################################################################## falta un chek de que viene el shp, shx, prj y dbf
+    ## falta un chek de que viene el shp, shx, prj y dbf
     for f in uploaded_files:
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
@@ -114,9 +119,9 @@ def upload():
 
 if __name__ == '__main__':
     app.run(
-        host="0.0.0.0",
-        port=5004,
-        debug=True
+#        host="0.0.0.0",
+#        port=5004,
+#        debug=True
     )
 
 
