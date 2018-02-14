@@ -85,38 +85,39 @@
 
   <body>
 
-    <div class="ui grid">
-	    
+     <div class="pusher" style="height: 100%;">
+	    <div class="ui one column stackable grid" style="height: 100%;">
 	
 	      <!-- open layers map -->
-	     <div class="twelve wide column">
+	     <div class="sixteen wide column">
 			 <div class="ui segment">
-			 	<div id="map"></div>
+			 	<div id="map" style="height: 850px;"></div>
 			 </div>
 			 
-	     </div>
-	     <div class="four wide column">
-			
-			<div class="ui segment">
-		  		
-		  		<form action="upload" method=post enctype=multipart/form-data>
-			      <p><input type=file name=file[] multiple="multiple">
-			         <input type=submit value=Upload>
-			    </form>
-				
-			</div>
-			<div class="ui segment">
-		  		
-		  		<div id="statistics"></div>
-				
-			</div>
-	     </div>
+	    
+	    
 	     <!-- parallel coordinates graph -->
 	     
-	     <div class="sixteen wide column">
+	     
 			<div class="ui segment">
-				<div id="graph" class="parcoords" style="width:1800px;height:250px;"></div>
-		  		<button onclick="reset()">reset</button>
+				<div id="graph" class="parcoords" style="width:100%;height:320px;"></div>
+				
+				<div class="ui three column grid" style="margin-top: 0.5em; margin-left: 3em;"> 
+				     <div class="five wide column">
+            		  		<button onclick="reset()">reset</button>
+            		  	</div>
+            		  	<div class="five wide column">
+            		  		<form action="upload" method=post enctype=multipart/form-data>
+            			      <p><input type=file name=file[] multiple="multiple">
+        			         <input type=submit value=Upload>
+            			    </form>
+            		  	</div>
+            		  	<div class="five wide column">
+            		  		<div id="statistics"></div>
+            		  	</div>
+        		  		
+        			    
+			     </div>
 			</div>
 	     </div>
 	     

@@ -183,7 +183,7 @@ d3.csv(data_url, function(data) {
 	pcz.svg.selectAll(".dimension")
 	 .on("click", change_color)
 	 .selectAll(".label")
-	 .style("font-size", "15px");
+	 .style("font-size", "26px");
 	pcz.on("brush", function(d) {
 		vectorSource.clear();
 		pcz.shadows();
