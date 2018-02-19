@@ -22,7 +22,7 @@ function get_features(url) {
 
     return features;
 }
-//linear color scale 
+//linear color scale
 var colorscale = d3.scale.linear()
 .domain([0,1])
 .range(["pink", "purple"])
@@ -32,8 +32,8 @@ function hexToRGB(hex, alpha) {
     var r = parseInt(hex.slice(1, 3), 16),
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
-    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";   
-}	
+    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+}
 var polygon_style2 = new ol.style.Style({
 	  fill: new ol.style.Fill({color: hexToRGB(colorscale(0.9),0.65)}),
 	  stroke: new ol.style.Stroke({color: hexToRGB(colorscale(0.9),1),width: 1}),
@@ -57,7 +57,7 @@ var map
 var vectorSource = new ol.source.Vector({projection: 'EPSG:4326'});
 var miVector = new ol.layer.Vector({
     	source: vectorSource
-}); 
+});
 var layer = new ol.layer.Vector();
 jsonSource_data_layer = new ol.source.Vector();
 jsonSource_data_layer.addFeatures(get_features(layer_url));
@@ -72,22 +72,22 @@ if ((geometry_type == "Polygon") || (geometry_type == "MultiPolygon")){
 	layer.setStyle(polygon_style);
 	miVector.setStyle(polygon_style2);
 }
-	
+
 if (geometry_type == "Point" || geometry_type == "MultiPoint"){
 	layer.setStyle(point_style);
 	miVector.setStyle(point_style2);
 }
-	
-       
 
 
-    
+
+
+
 var stamenLayer = new ol.layer.Tile({
 	source: new ol.source.Stamen({layer: 'terrain'})
 });
-var ageb_ids = []; 
+var ageb_ids = [];
 todos.forEach(function(feature){ageb_ids.push(feature.get("id"))});
- 
+
 var estosFeatures = todos;
 
 map = new ol.Map({
@@ -123,7 +123,7 @@ var displayFeatureInfo = function (pixel) {
 	    vectorSource.addFeatures(estosFeatures);
 	    pcz.unhighlight();
 	    stats_div.innerHTML = "selected: "+ ageb_ids.length;
-	    
+
 	}
 
 	if (feature !== highlight) {
@@ -160,10 +160,10 @@ map.getViewport().addEventListener('mouseout', function(evt){
 var pcz;
 
 
-  
+
 //load csv file and create the chart
 d3.csv(data_url, function(data) {
-	
+
 	pcz = d3.parcoords()("#graph")
 	 .data(data)
 	 .hideAxis(["id"])
@@ -176,12 +176,12 @@ d3.csv(data_url, function(data) {
 	 .alpha(1)
 	 .brushMode("1D-axes")  // enable brushing
 	 .interactive()  // command line mode
-	
-	//change_color("Edad_infra");
-	
+
+
+
 	// click label to activate coloring
 	pcz.svg.selectAll(".dimension")
-	 .on("click", change_color)
+	// .on("click", change_color)
 	 .selectAll(".label")
 	 .style("font-size", "26px");
 	pcz.on("brush", function(d) {
@@ -201,17 +201,17 @@ d3.csv(data_url, function(data) {
 //update color
 function change_color(dimension) {
     if (pcz.dimensions()[dimension].type == "number"){
-    
-    
-   
+
+
+
         	pcz.svg.selectAll(".dimension")
         	 .style("font-weight", "normal")
         	 .filter(function(d) { return d == dimension; })
         	 .style("font-weight", "bold")
         	pcz.color(pre_color(pcz.data(),dimension)).render()
-        	
-        	
-        	
+
+
+
         	var polygon_style_p = function(feature, resolution){
         	    var context = {
         			feature: feature,
@@ -225,7 +225,7 @@ function change_color(dimension) {
         	    var size = 0;
         	    var style = [ new ol.style.Style({
         		    	stroke: new ol.style.Stroke({
-        			    		color: colorscale(normalize(value)), 
+        			    		color: colorscale(normalize(value)),
         						lineDash: null,
         						lineCap: 'butt',
         						lineJoin: 'miter',
@@ -239,7 +239,7 @@ function change_color(dimension) {
         		var labelText = ""
         	    }
         	    var key = value + "_" + labelText
-        
+
         	    if (!styleCache[key]){
         		var text = new ol.style.Text({
         		      font: '14.3px \'Ubuntu\', sans-serif',
@@ -258,12 +258,12 @@ function change_color(dimension) {
         	    allStyles.push.apply(allStyles, style);
         	    return allStyles;
         	};
-        
+
         	miVector.setStyle(polygon_style_p);
      }
-	
+
 }
-	
+
 function pre_color(col,dimension){
 	var slice = _(col).pluck(dimension).map(parseFloat);
 	var normalize = d3.scale.linear()
@@ -272,19 +272,17 @@ function pre_color(col,dimension){
 	return function(d) { return colorscale(normalize(d[dimension])) }
 }
 function reset(){
-	ageb_ids = []; 
+	ageb_ids = [];
 	todos.forEach(function(feature){ageb_ids.push(feature.get("id"))});
-	 
+
 	estosFeatures = todos;
 	vectorSource.clear();
 	vectorSource.addFeatures(estosFeatures);
-	
+
 	pcz.brushReset();
 	pcz.color(hexToRGB(colorscale(0.9),0.65)).render();
 	pcz.svg.selectAll(".dimension")
 	 .style("font-weight", "normal")
 	miVector.setStyle(polygon_style2);
-	
+
 }
-
-

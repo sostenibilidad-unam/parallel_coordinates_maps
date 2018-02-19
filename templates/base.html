@@ -20,7 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"
 	    integrity="sha256-Bhi6GMQ/72uYZcJXCJ2LToOIcN3+Cx47AZnq/Bw1f7A="
 	    crossorigin="anonymous"></script>
-	    
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js" integrity="sha256-SzKOQsVYGX1bmddyfPzGC6yXY/rWYGUSMOi6+T9gZ+0=" crossorigin="anonymous"></script>
 
 
@@ -33,21 +33,21 @@
 	    integrity="sha256-Gox75luuxLxNYWsoO+2sGVMYOUcheq0zhGEB2310fuw=" crossorigin="anonymous"></script>
 
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"
 		integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec=" crossorigin="anonymous"></script>
-		
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/parcoords/0.7.0/d3.parcoords.css" 
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/parcoords/0.7.0/d3.parcoords.css"
 		integrity="sha256-5xEAILWn4PCchv5VcG34HW6666pNuyjo7B/4+e6a6wQ=" crossorigin="anonymous" />
-	
+
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/parcoords/0.7.0/d3.parcoords.js" -->
 	<!--	integrity="sha256-P1EuxWFFZ7gng7kzlSGQywWxZF4SBHMU++KS2HA3FNE=" crossorigin="anonymous"></script>  -->
-	
-	<script src="/static/d3.parcoords.js"></script>		
-	<script src="/static/underscore.math.js"></script>	
+
+	<script src="/static/d3.parcoords.js"></script>
+	<script src="/static/underscore.math.js"></script>
 	<script src="/static/d3.svg.multibrush.js"></script>
 
     <style type="text/css">
-    
+
       body {
            margin: 3em;
       }
@@ -68,17 +68,18 @@
        }
 
     </style>
-    
+
     <!-- parallel coordinates -->
     <style>
-		svg {font: 16px sans-serif; font-weight: normal;}
+		svg {font: 30px sans-serif; font-weight: normal;}
 		.background path {fill: none; stroke: #ddd; shape-rendering: crispEdges;}
 		.one_foreground path {stroke-width: 4px; fill: none; stroke: #9a378f;}
 		.foreground path {fill: none; stroke: #9a378f;}
 		.brush .extent {fill-opacity: .3; stroke: #9a378f; shape-rendering: crispEdges;}
 		.axis line,
 		.axis path {fill: none; stroke: #000; shape-rendering: crispEdges;}
-		.axis text {text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;}  
+		.axis text {text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;}
+    .axis {font: 20px sans-serif; font-weight: bold;}
 		* {margin: 0; padding: 0;}
 	</style>
 
@@ -88,22 +89,22 @@
 
      <div class="pusher" style="height: 100%;">
 	    <div class="ui one column stackable grid" style="height: 100%;">
-	
+
 	      <!-- open layers map -->
 	     <div class="sixteen wide column">
 			 <div class="ui segment">
 			 	<div id="map" style="height: 800px;"></div>
 			 </div>
-			 
-	    
-	    
+
+
+
 	     <!-- parallel coordinates graph -->
-	     
-	     
+
+
 			<div class="ui segment">
 				<div id="graph" class="parcoords" style="width:100%;height:370px;"></div>
-				
-				<div class="ui three column grid" style="margin-top: 0.5em; margin-left: 3em;"> 
+
+				<div class="ui three column grid" style="margin-top: 0.5em; margin-left: 3em;">
 				     <div class="five wide column">
             		  		<button onclick="reset()">reset</button>
             		  	</div>
@@ -116,16 +117,16 @@
             		  	<div class="five wide column">
             		  		<div id="statistics"></div>
             		  	</div>
-        		  		
-        			    
+
+
 			     </div>
 			</div>
 	     </div>
-	     
+
     </div>
     <script>
-    
- 
+
+
     </script>
     <script src="/static/styles.js"></script>
     <script src="/static/map_setup.js" layer_url="{{ layer_url }}" data_url="{{ data_url }}"></script>
