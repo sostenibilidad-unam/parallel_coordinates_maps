@@ -1,5 +1,9 @@
 # Parallel coordinates and maps
 
-This web app uses [parallel coordinates](https://syntagmatic.github.io/parallel-coordinates/) along with interactive maps spatial analyses.
+Parallel coordinates maps es una aplicacíon web que combina las graficas de coordenadas paralelas con entidades geograficas interactivamente 
 
-[Try it out!](http://pc.magrat.mine.nu)
+<img src="screenshot.png">
+
+Esta aplicación hace uso del [parallel coordinates](https://syntagmatic.github.io/parallel-coordinates/).
+
+[Pruébala!](http://pc.magrat.mine.nu)
