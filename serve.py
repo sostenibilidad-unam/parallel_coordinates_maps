@@ -14,11 +14,11 @@ from json import dumps
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = './uploads/'
+app.config['UPLOAD_FOLDER'] = '/var/www/parallel_coordinates_maps/uploads/'
 
 ALLOWED_EXTENSIONS = ['prj', 'shp', 'dbf', 'shx']
 
-env = Environment(loader=FileSystemLoader('templates'))
+env = Environment(loader=FileSystemLoader('/var/www/parallel_coordinates_maps/templates'))
 
 @app.route("/")
 def root():
