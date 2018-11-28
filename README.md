@@ -1,9 +1,10 @@
 # Parallel coordinates and maps
 
-Parallel coordinates maps es una aplicacíon web que combina las graficas de coordenadas paralelas con entidades geográficas interactivamente 
+Parallel coordinates maps es una aplicacíon web que combina las graficas de coordenadas paralelas con entidades geográficas interactivamente. Esta aplicación hace uso de las bibliotecas de JavaScript:
+[parallel coordinates](https://syntagmatic.github.io/parallel-coordinates/).
+[openlayers](https://openlayers.org/).
 
 <img src="screenshot.png">
 
-Esta aplicación hace uso del [parallel coordinates](https://syntagmatic.github.io/parallel-coordinates/).
 
 [Pruébala!](http://pc.magrat.mine.nu)
