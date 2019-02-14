@@ -181,7 +181,7 @@ d3.csv(data_url, function(data) {
 
 	// click label to activate coloring
 	pcz.svg.selectAll(".dimension")
-	// .on("click", change_color)
+	 .on("click", change_color)
 	 .selectAll(".label")
 	 .style("font-size", "26px");
 	pcz.on("brush", function(d) {

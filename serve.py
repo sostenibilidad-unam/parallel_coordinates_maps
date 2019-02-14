@@ -14,11 +14,11 @@ from json import dumps
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = '/var/www/parallel_coordinates_maps/uploads/'
+app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 ALLOWED_EXTENSIONS = ['prj', 'shp', 'dbf', 'shx']
 
-env = Environment(loader=FileSystemLoader('/var/www/parallel_coordinates_maps/templates'))
+env = Environment(loader=FileSystemLoader('templates'))
 
 @app.route("/")
 def root():
@@ -54,15 +54,15 @@ def hash_from_shp(shp_path):
     BUF_SIZE = 65536  # lets read stuff in 64kb chunks!
 
     md5 = hashlib.md5()
-    
+
     with open(shp_path, 'rb') as f:
         while True:
             data = f.read(BUF_SIZE)
             if not data:
                 break
             md5.update(data)
-    
-    
+
+
     return md5.hexdigest()
 
 @app.route('/parallel_coordinates_maps/upload', methods=['POST'])
@@ -78,7 +78,7 @@ def upload():
             if f.filename.endswith(".shp"):
                 elShp = f.filename
             filenames.append(filename)
-    print os.path.join(app.config['UPLOAD_FOLDER'], elShp)      
+    print os.path.join(app.config['UPLOAD_FOLDER'], elShp)
     reader = shapefile.Reader(os.path.join(app.config['UPLOAD_FOLDER'], elShp))
     print reader.shapeType
     fields = reader.fields[1:]
@@ -88,8 +88,8 @@ def upload():
         atr = dict(zip(field_names, sr.record))
         geom = sr.shape.__geo_interface__
         buff.append(dict(type="Feature", \
-         geometry=geom, properties=atr)) 
-    
+         geometry=geom, properties=atr))
+
     el_hash = hash_from_shp(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
     if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], el_hash)):
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
@@ -99,15 +99,15 @@ def upload():
         return redirect("/parallel_coordinates_maps/%s" % el_hash)
     else:
         os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], el_hash))
-    
+
     # write the GeoJSON file
     with open(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "layer.json"), "w") as geojson:
         geojson.write(dumps({"type": "FeatureCollection", "features": buff}, indent=0))
-    
+
     # write the csv file
     dbf = Dbf5(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
     df = dbf.to_dataframe()
-    df.to_csv(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "data.csv"), encoding="utf8", index=False)    
+    df.to_csv(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], el_hash), "data.csv"), encoding="utf8", index=False)
     os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "dbf"))
     os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "prj"))
     os.remove(os.path.join(app.config['UPLOAD_FOLDER'], elShp[:-3] + "shp"))
@@ -123,5 +123,3 @@ if __name__ == '__main__':
         port=5004,
         debug=True
     )
-
-
