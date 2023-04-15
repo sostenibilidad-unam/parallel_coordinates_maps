@@ -4,7 +4,7 @@
 import os
 from datetime import datetime
 from flask import Flask, render_template, jsonify, redirect, url_for, request, send_from_directory
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 import shapefile
 from jinja2 import Environment, FileSystemLoader
 import json
@@ -78,9 +78,9 @@ def upload():
             if f.filename.endswith(".shp"):
                 elShp = f.filename
             filenames.append(filename)
-    print os.path.join(app.config['UPLOAD_FOLDER'], elShp)
+    print(os.path.join(app.config['UPLOAD_FOLDER'], elShp))
     reader = shapefile.Reader(os.path.join(app.config['UPLOAD_FOLDER'], elShp))
-    print reader.shapeType
+    print(reader.shapeType)
     fields = reader.fields[1:]
     field_names = [field[0] for field in fields]
     buff = []
@@ -120,6 +120,6 @@ def upload():
 if __name__ == '__main__':
     app.run(
         host="0.0.0.0",
-        port=5004,
+        port=5005,
         debug=True
     )

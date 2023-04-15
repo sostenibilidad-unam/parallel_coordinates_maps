@@ -2,3 +2,4 @@ flask
 pyshp
 simpledbf
 pandas
+werkzeug
